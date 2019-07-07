@@ -1,0 +1,23 @@
+{% extends "main/base.html" %}
+
+{% block conteudo %}
+	<div id="main">
+		<ul>
+			{% for categoria in categorias %}
+			<li>
+				{{ categoria.nome }}
+				<ul>
+					{% if categoria.salas.all() %}
+					{% for sala in categoria.salas.all() %}
+					<li><a href="{{ url_for('sala.sala', id_sala=sala.id, nome_sala=sala.nome)}}">{{ sala.nome }}</a></li>
+					{% endfor %}
+					{% else %}
+					<li>Ainda não há salas cadastradas nesta categoria</li>
+					{% endif %}
+				</ul>
+				<a href="{{ url_for('sala.cad_sala', categoria=categoria.id, cat_nome=categoria.nome)}}"><button>Criar Sala</button></a>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}

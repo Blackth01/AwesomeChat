@@ -1,0 +1,52 @@
+<html>
+	<head>
+		{% if title %}
+                <title>{{ title }}</title>
+		<meta charset="utf-8">
+      		{% else %}
+		<title>O famigerado chat</title>
+		{% endif %}
+		<style>
+			.msg_eu	{
+				float:right;
+				width:60%;
+				background-color:green;
+				border-radius:10px;
+				margin-bottom:10px;
+			}
+			.msg_eles {
+				float:left;
+				width:60%;
+				background-color:red;
+				border-radius:10px;
+				margin-bottom:10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="margin:auto; width:700px; height:500px; overflow:auto;background-color:red">
+			<div>
+				<a href="{{ url_for('main.index') }}">Inicio</a>
+                {% if current_user.admin %}
+                <a href="{{ url_for('categoria.cad_categoria')}}">Cadastro de Categorias</a>
+				<a href="{{ url_for('categoria.del_categoria')}}">Remover Categorias</a>
+                {% endif %}
+				{% if current_user.is_anonymous %}
+				<a href="{{ url_for('usuario.login') }}">Login</a>
+				{% else %}
+				<a href="{{ url_for('sala.del_sala')}}">Remover Salas</a>
+				<a href="{{ url_for('usuario.logout') }}">Logout</a>
+				{% endif %}
+			</div>
+                        <hr>
+                        {% with messages=get_flashed_messages() %}
+                        {% if messages %}
+				{% for message in messages %}
+				<p>{{ message }}</p>
+       				{% endfor %}
+                        {% endif %}
+                        {% endwith %}
+			{% block conteudo %}{% endblock %}
+		</div>
+	</body>
+</html>

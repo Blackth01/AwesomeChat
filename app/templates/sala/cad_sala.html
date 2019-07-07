@@ -1,0 +1,18 @@
+{% extends "main/base.html" %}
+
+{% block conteudo %}
+	<div>
+		<h1>Cadastro de Sala na Categoria {{ cat_nome }}</h1>
+		<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+		<p>
+			{{ form.nome.label }}<br>
+			{{ form.nome(size=32) }}<br>
+			{% for error in form.nome.errors%}
+			<span style="color:black">[{{ error }}]</span>
+			{% endfor %}
+		</p>
+		<p>{{ form.submit() }}</p>
+		</form>
+	</div>
+{% endblock %}
