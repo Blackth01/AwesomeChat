@@ -2,6 +2,7 @@
 from app import db, login
 from flask_login import UserMixin
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class SalaUsuario(db.Model):
@@ -58,11 +59,14 @@ class Usuario(UserMixin, db.Model):
     def __repr__(self):
         return '<Usuário {}>'.format(self.nickname)
 
-    def verifica_senha(self, senha):
-        if (self.senha == senha):
-            return False
-        else:
+    def check_password(self, senha):
+        if (check_password_hash(self.senha, senha)):
             return True
+        else:
+            return False
+
+    def set_password(self):
+        self.senha = generate_password_hash(self.senha)
 
     def join_sala(self, sala):
         if not self.entrou_sala(sala.id):
