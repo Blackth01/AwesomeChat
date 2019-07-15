@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 from app.models import Usuario, Mensagem, Categoria, Sala
 
 
-@bp.route('/Sala/<id_sala>/<nome_sala>')
+@bp.route('/Sala/<id_sala>/<nome_sala>', methods=['GET', 'POST'])
 @login_required
 def sala(id_sala, nome_sala):
     if not Sala.query.filter_by(id=id_sala).first():
@@ -24,12 +24,19 @@ def sala(id_sala, nome_sala):
         flash('Você está banido desta sala!')
         return redirect(url_for('main.index'))
 
+    #Verifica se o usuário é admin do site ou dono da sala
+    if(not current_user.admin and current_user.id != sala.admin_id):
+        #Verifica se há senha ou se a senha está correta
+        if(sala.senha and not sala.check_password(request.form.get('senha', ''))):
+            flash('Senha incorreta!')
+            return redirect(url_for('sala.senha_sala', sala_id=sala.id, sala_nome=sala.nome))
+
     user = Usuario()
     usuario_atual = user.query.filter_by(id=current_user.id).first()
     #Adiciona o usuário à sala
     usuario_atual.join_sala(sala)
     db.session.commit()
-    #Pega as 10 últimas conversa
+    #Pega as 10 últimas conversas
     conversas = Mensagem.query.filter(Mensagem.sala_id==id_sala).order_by(Mensagem.data_envio.desc()).limit(10)
     #Inverte a ordem das conversas
     conversas = conversas[::-1]
@@ -56,6 +63,11 @@ def banir():
     sala.banir(usuario)
     db.session.commit()
     return 'success'
+
+@bp.route('/Sala/Senha/<sala_id>/<sala_nome>', methods=['GET', 'POST'])
+@login_required
+def senha_sala(sala_id, sala_nome):
+    return render_template('sala/senha_sala.html', title='Senha', sala_id=sala_id, sala_nome=sala_nome)
 
 
 @bp.route('/Sala/Desbanir', methods=['POST'])
@@ -118,7 +130,9 @@ def cad_sala(categoria, cat_nome):
         if not nome_categoria:
             flash('A categoria selecionada não existe!')
             return redirect(url_for('main.index'))
-        sala = Sala(nome=form.nome.data, categoria_id=categoria, admin_id=current_user.id)
+        sala = Sala(nome=form.nome.data, categoria_id=categoria, admin_id=current_user.id, senha=form.senha.data)
+        if(form.senha.data):
+            sala.set_password()
         db.session.add(sala)
         db.session.commit()
         flash('Sala criada com sucesso na categoria %s!' % nome_categoria)

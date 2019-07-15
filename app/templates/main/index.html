@@ -9,7 +9,11 @@
 				<ul>
 					{% if categoria.salas.all() %}
 					{% for sala in categoria.salas.all() %}
+					{% if sala.senha and (not current_user.admin and current_user.id != sala.admin_id) %}
+					<li><a href="{{ url_for('sala.senha_sala', sala_id=sala.id, sala_nome=sala.nome)}}">{{ sala.nome }}</a></li>
+					{% else %}
 					<li><a href="{{ url_for('sala.sala', id_sala=sala.id, nome_sala=sala.nome)}}">{{ sala.nome }}</a></li>
+					{% endif %}
 					{% endfor %}
 					{% else %}
 					<li>Ainda não há salas cadastradas nesta categoria</li>

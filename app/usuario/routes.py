@@ -13,7 +13,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = LoginForm()
-
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(nickname=form.username.data).first()
         if usuario is None or not usuario.check_password(form.password.data):
@@ -31,7 +30,6 @@ def registrar():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = RegisterForm()
-
     if form.validate_on_submit():
         usuario = Usuario(nickname=form.username.data, senha=form.password.data)
         usuario.set_password()

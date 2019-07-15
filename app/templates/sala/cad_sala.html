@@ -11,6 +11,11 @@
 			{% for error in form.nome.errors%}
 			<span style="color:black">[{{ error }}]</span>
 			{% endfor %}
+			{{ form.senha.label }}<br>
+			{{ form.senha(size=32) }}<br>
+			{% for error in form.senha.errors%}
+			<span style="color:black">[{{ error }}]</span>
+			{% endfor %}
 		</p>
 		<p>{{ form.submit() }}</p>
 		</form>

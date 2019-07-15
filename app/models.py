@@ -23,11 +23,21 @@ class SalaBanido(db.Model):
 class Sala(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(60), index=True)
+    senha = db.Column(db.String(120), index=True)
     categoria_id = db.Column(db.Integer, db.ForeignKey('categoria.id', ondelete='CASCADE'), nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey('usuario.id', ondelete='CASCADE'), nullable=False)
     mensagens = db.relationship('Mensagem', backref='sala', lazy='dynamic', cascade='all, delete')
     usuarios = db.relationship("SalaUsuario", back_populates="sala", lazy="dynamic", cascade="all, delete-orphan")
     banidos = db.relationship("SalaBanido", back_populates="sala", lazy="dynamic", cascade="all, delete-orphan")
+
+    def check_password(self, senha):
+        if (check_password_hash(self.senha, senha)):
+            return True
+        else:
+            return False
+
+    def set_password(self):
+        self.senha = generate_password_hash(self.senha)
 
     def banir(self, usuario):
         if(not self.isBanido(usuario.id) and self.admin_id != usuario.id):
