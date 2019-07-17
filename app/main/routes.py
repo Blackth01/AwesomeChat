@@ -25,37 +25,39 @@ def conversa():
     sala = Sala.query.filter_by(id=sala_id).first()
     resposta = ""
 
+    if(not sala):
+        return jsonify({'msg':'Esta sala não existe!'})
+
     if(not current_user.admin and sala.admin_id != current_user.id):
         if (sala.isBanido(current_user.id)):
-            return jsonify({'resposta': 'B', 'id': 0, 'usuarios': '', 'secretas': ''})
+            return jsonify({'mensagens': 'B', 'id': 0, 'usuarios': ''})
 
-    #Constrói as mensagens da sala
-    for conversa in conversas:
-        nome = conversa.remetente.nickname
+    i=0
+    for conversa in conversas[:]:
+        id = conversa.id
+        #verifica se a mensagem é do próprio usuário
         if (conversa.usuario_id != current_user.id):
             if (conversa.private_id):
-                if(conversa.private_id == current_user.id):
-                    resposta+= "<div class='msg_eles'><p>(reservadamente)"+nome+": "+conversa.conteudo+"</p></div>"
-            else:
-                resposta += "<div class='msg_eles'><p>"+nome+": "+conversa.conteudo+"</p></div>"
-        id = conversa.id
-    #Pega os usuários da sala
-    usuarios = ""
-    secretas = "<label>Enviar para: </label><input type='radio' name='msg_secreta' id='todos' value=''></input><label for='todos'>Todos</label>"
-    if(sala):
-        if(sala.admin_id == current_user.id or current_user.admin):
-            for assoc in sala.usuarios:
-                usuarios+= '<a><p>%s</p><button onclick="banir(%d)">BANIR</button></a>' \
-                % (assoc.usuario.nickname, assoc.usuario.id)
-                secretas+= "<input type='radio' name='msg_secreta' id='%s' value='%d'></input><label for='%s'>%s</label>" \
-                % (assoc.usuario.nickname, assoc.usuario.id, assoc.usuario.nickname, assoc.usuario.nickname)
-        else:
-            for assoc in sala.usuarios:
-                usuarios+= "<a><p>"+assoc.usuario.nickname+"</p></a>"
-                secretas+= "<input type='radio' name='msg_secreta' id='%s' value='%d'></input><label for='%s'>%s</label>" \
-                % (assoc.usuario.nickname, assoc.usuario.id, assoc.usuario.nickname, assoc.usuario.nickname)
+                #Se a mensagem privada não for para o usuário, exclui a mensagem da lista
+                if(conversa.private_id != current_user.id):
+                    del conversas[i]
+                    continue
+            dicionario = {}
+            dicionario['id'] = conversa.id
+            dicionario['conteudo'] = conversa.conteudo
+            dicionario['remetente'] = conversa.remetente.nickname
+            dicionario['private_id'] = conversa.private_id
+            conversas[i] = dicionario
+        i+=1
 
-    return jsonify({'resposta': resposta, 'id': id, 'usuarios': usuarios, 'secretas': secretas})
+    usuarios = []
+    for assoc in sala.usuarios:
+        dicionario = {}
+        dicionario['id'] = assoc.usuario.id
+        dicionario['nome'] = assoc.usuario.nickname
+        usuarios.append(dicionario)
+
+    return jsonify({'mensagens': conversas, 'id': id, 'usuarios': usuarios})
 
 
 @bp.route('/enviar_mensagem', methods=['POST'])

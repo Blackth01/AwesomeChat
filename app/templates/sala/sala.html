@@ -87,6 +87,7 @@
 			}
 		})
 
+		//realiza a busca por mensagens e usuários
 		function procurar(identificador) {
 			$.post('{{ url_for('main.conversa') }}', {id:identificador, sala:{{ id_sala }}},
 
@@ -95,12 +96,37 @@
 					alert('VOCÊ FOI BANIDO!')
 					window.location.replace("/")
 				}
-				$('#main').append(data['resposta'])
+				mensagens = data['mensagens']
+				usuarios = data['usuarios']
 				id = data['id']
+
+				usuarioshtml = ''
+				secretashtml = "<label>Enviar para: </label><input type='radio' name='msg_secreta' id='todos' value=''></input><label for='todos'>Todos</label>"
+				mensagenshtml = ''
+				for (posicao in mensagens){
+					if(mensagens[posicao].private_id){
+						mensagenshtml += "<div class='msg_eles'><p>(reservadamente)"+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
+					}
+					else{
+						mensagenshtml += "<div class='msg_eles'><p>"+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
+					}
+				}
+				$('#main').append(mensagenshtml)
+
+
+				for (posicao in usuarios){
+					{% if current_user.admin or current_user.id==sala.admin_id %}
+					usuarioshtml += '<a><p>'+usuarios[posicao].nome+'</p><button onclick="banir('+usuarios[posicao].id+')">BANIR</button></a>'
+					{% else %}
+					usuarioshtml += "<a><p>"+usuarios[posicao].nome+"</p></a>"
+					{% endif %}
+					secretashtml += "<input type='radio' name='msg_secreta' id='"+usuarios[posicao].nome+"' value='"+usuarios[posicao].id+"'></input><label for='"+usuarios[posicao].nome+"'>"+usuarios[posicao].nome+"</label>"
+				}
+
 				atual = $('#usuarios').html()
-				if (atual != data['usuarios']) {
-					$('#usuarios').html(data['usuarios'])
-					$('#secretas').html(data['secretas'])
+				if (atual != usuarioshtml) {
+					$('#usuarios').html(usuarioshtml)
+					$('#secretas').html(secretashtml)
 				}
 			})
 		}
@@ -110,6 +136,7 @@
 		}
 
 		{% if current_user.admin or current_user.id==sala.admin_id %}
+		
 		function banir(id_banido){
 			$.post('{{ url_for('sala.banir') }}', {sala_id:{{ id_sala}}, usuario_id:id_banido},function(data){console.log(data)})
 		}
