@@ -1,5 +1,8 @@
-# ChatRoomming
-A simple chat room site built with Flask.
+# AwesomeChat
+A simple chat room website built with Flask.
+
+### [Visit the website](https://chat.desenvolvedor.tech/login)
+
 
 
 ## Starting application
