@@ -2,12 +2,14 @@
 
 {% block conteudo %}
 	<div>
-		<h1>Senha para a sala {{ sala_nome }}</h1>
+		<h3>Senha para a sala {{ sala_nome }}</h3>
 		<form action="{{ url_for('sala.sala', id_sala=sala_id, nome_sala=sala_nome) }}" method="post">
 				 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 				<label for="senha">Senha</label>
 				<input type="password" name="senha" id="senha">
-				<button type="submit">Entrar</button>
+            <button class="btn waves-effect waves-light red darken-4" type="submit">Entrar
+                <i class="material-icons right">send</i>
+            </button>
 		</form>
 	</div>
 {% endblock %}

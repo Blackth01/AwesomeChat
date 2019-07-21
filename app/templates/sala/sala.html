@@ -2,50 +2,65 @@
 
 
 {% block conteudo %}
-	<div>
-	    <h1>Sala {{ sala.nome }}</h1>
-		<a href="{{ url_for('sala.sair_sala', id_sala=sala.id)}}"><button>Sair da sala</button></a>
-		{% if current_user.admin or current_user.id==sala.admin_id %}
-		<a href="#lista_banidos" rel="modal:open"><button onclick="getBanidos()">Ver lista de banidos</button></a>
-		{% endif %}
-	</div>
-	<div id="main" style="background-color:purple; width:500px; float:left; height:90%; overflow:auto">
-		{% for conversa in conversas %}
-			{% if conversa.usuario_id == current_user.id %}
-				<div class="msg_eu"><p>{{ current_user.nickname }}: {{ conversa.conteudo }}</p></div>
-			{% else %}
-				{% if conversa.private_id %}
-				{% if conversa.private_id == current_user.id %}
-				<div class="msg_eles"><p>(reservadamente){{ conversa.remetente.nickname }}: {{ conversa.conteudo }}</p></div>
-				{% endif %}
-				{% else %}
-				<div class="msg_eles"><p>{{ conversa.remetente.nickname }}: {{ conversa.conteudo }}</p></div>
-				{% endif %}
+	<div class="row red darken-3">
+		<div class="col s12" style="margin-bottom:3%">
+		    <h1>Sala {{ sala.nome }}</h1>
+			<a class="waves-effect waves-light btn red darken-4" href="{{ url_for('sala.sair_sala', id_sala=sala.id)}}">Sair da sala</a>
+			{% if current_user.admin or current_user.id==sala.admin_id %}
+			<a onclick="getBanidos()" class="waves-effect waves-light btn red darken-4" href="#lista_banidos" rel="modal:open">Ver lista de banidos</a>
 			{% endif %}
-		{% endfor %}
-	</div>
-	<div id="usuarios" style="text-align:center; background-color:blue; width:175px; float:right; height:90%; overflow:auto">
-		{% for assoc in sala.usuarios %}
-		<a><p>{{ assoc.usuario.nickname }}</p></a>
-		{% endfor %}
-	</div>
-	<div style="width:100%; clear:both">
-		<input id="mensagem" type="text" style="width:78%"></input>
-		<button id="send" style="width:20%">ENVIAR</button>
-		<div id="secretas">
-			<label>Enviar para: </label>
-			<input type="radio" name="msg_secreta" id="todos" value=""></input>
-			<label for="todos">Todos</label>
-			{% for usuario in sala.usuarios %}
-			<input type="radio" name="msg_secreta" id="{{ usuario.nickname }}" value="{{ usuario.id}}"></input>
-			<label for="{{ usuario.nickname }}">{{ usuario.nickname }}</label>
+		</div>
+		<div id="main" class="col s8" style="height:70%;overflow:auto">
+			{% for conversa in conversas %}
+				{% if conversa.usuario_id == current_user.id %}
+					<div class="msg_eu red darken-4"><p>{{ current_user.nickname }}: {{ conversa.conteudo }}</p></div>
+				{% else %}
+					{% if conversa.private_id %}
+					{% if conversa.private_id == current_user.id %}
+					<div class="msg_eles red lighten-1"><p>{{conversa.data_envio}} (reservadamente){{ conversa.remetente.nickname }}: {{ conversa.conteudo }}</p></div>
+					{% endif %}
+					{% else %}
+					<div class="msg_eles red lighten-1"><p>{{conversa.data_envio}} {{ conversa.remetente.nickname }}: {{ conversa.conteudo }}</p></div>
+					{% endif %}
+				{% endif %}
 			{% endfor %}
+		</div>
+		<div id="usuarios" class="col s4 center-align" style="height:70%;overflow:auto">
+			<h5>Usuários</h5>
+			<ul class="collection">
+			{% for assoc in sala.usuarios %}
+			<li class="collection-item center-align red darken-4"><p>{{ assoc.usuario.nickname }}</p></li>
+			{% endfor %}
+			</ul>
+		</div>
+		<div id="secretas" class="col s12" style="margin-top:3%;max-height: 5%;overflow:auto">
+			<span>Enviar para: </span>
+			<label>
+				<input type="radio" name="msg_secreta" id="todos" value=""></input>
+				<span>Todos</span>
+			</label>
+			{% for assoc in sala.usuarios %}
+			<label>
+				<input type="radio" name="msg_secreta" id="{{ assoc.usuario.nickname }}" value="{{ assoc.usuario.id}}"></input>
+				<span>{{ assoc.usuario.nickname }}</span>
+			</label>
+			{% endfor %}
+		</div>
+		<div class="col s12">
+			<div class="row">
+				<div class="col s8">
+					<input id="mensagem" type="text"></input>
+				</div>
+				<div class="col s4">
+					<button id="send" class="btn waves-effect waves-light red darken-4" type="submit">Enviar
+	                <i class="material-icons right">send</i>
+	        		</button>
+				</div>
 		</div>
 	</div>
 	<div id="lista_banidos" class="modal">
 	  <p>Carregando...</p>
 	</div>
-	<script src="/static/js/jquery.min.js"></script>
 	<script src="/static/js/jquery.modal.min.js"></script>
 	<link rel="stylesheet" href="/static/css/jquery.modal.min.css" />
 	<script>
@@ -79,7 +94,7 @@
 				secreta = $("input[name=msg_secreta]:checked").val()
 				$.post('{{ url_for('main.enviar_mensagem') }}', {mensagem:$('#mensagem').val(), sala:{{ id_sala }}, secreta: secreta},
 					function(data){
-						$('#main').append('<div class="msg_eu"><p>{{ current_user.nickname }}: '+mensagem+'</p></div>')
+						$('#main').append('<div class="msg_eu red darken-4"><p>{{ current_user.nickname }}: '+mensagem+'</p></div>')
 						id = data['id']
 						$('#mensagem').val('')
 					})
@@ -100,15 +115,15 @@
 				usuarios = data['usuarios']
 				id = data['id']
 
-				usuarioshtml = ''
-				secretashtml = "<label>Enviar para: </label><input type='radio' name='msg_secreta' id='todos' value=''></input><label for='todos'>Todos</label>"
+				usuarioshtml = '<h5>Usuários</h5><ul class="collection">'
+				secretashtml = "<span>Enviar para: </span><label><input type='radio' name='msg_secreta' id='todos' value=''></input><span>Todos</span></label>"
 				mensagenshtml = ''
 				for (posicao in mensagens){
 					if(mensagens[posicao].private_id){
-						mensagenshtml += "<div class='msg_eles'><p>(reservadamente)"+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
+						mensagenshtml += "<div class='msg_eles red lighten-1'><p>"+mensagens[posicao].data_envio+"(reservadamente)"+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
 					}
 					else{
-						mensagenshtml += "<div class='msg_eles'><p>"+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
+						mensagenshtml += "<div class='msg_eles red lighten-1'><p>"+mensagens[posicao].data_envio+" "+mensagens[posicao].remetente+": "+mensagens[posicao].conteudo+"</p></div>"
 					}
 				}
 				$('#main').append(mensagenshtml)
@@ -116,16 +131,16 @@
 
 				for (posicao in usuarios){
 					{% if current_user.admin or current_user.id==sala.admin_id %}
-					usuarioshtml += '<a><p>'+usuarios[posicao].nome+'</p><button onclick="banir('+usuarios[posicao].id+')">BANIR</button></a>'
+					usuarioshtml += '<li class="collection-item center-align red darken-4"><p>'+usuarios[posicao].nome+'&nbsp;&nbsp;<button class="waves-effect waves-light btn red darken-4" onclick="banir('+usuarios[posicao].id+')">BANIR</button></p></li>'
 					{% else %}
-					usuarioshtml += "<a><p>"+usuarios[posicao].nome+"</p></a>"
+					usuarioshtml += '<li class="collection-item center-align red darken-4"><p>'+usuarios[posicao].nome+'</p></li>'
 					{% endif %}
-					secretashtml += "<input type='radio' name='msg_secreta' id='"+usuarios[posicao].nome+"' value='"+usuarios[posicao].id+"'></input><label for='"+usuarios[posicao].nome+"'>"+usuarios[posicao].nome+"</label>"
+					secretashtml += "<label><input type='radio' name='msg_secreta' id='"+usuarios[posicao].nome+"' value='"+usuarios[posicao].id+"'></input><span>"+usuarios[posicao].nome+"</span></label>"
 				}
 
 				atual = $('#usuarios').html()
-				if (atual != usuarioshtml) {
-					$('#usuarios').html(usuarioshtml)
+				if (atual != (usuarioshtml+'</ul>')) {
+					$('#usuarios').html(usuarioshtml+'</ul>')
 					$('#secretas').html(secretashtml)
 				}
 			})

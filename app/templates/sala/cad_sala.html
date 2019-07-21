@@ -2,7 +2,7 @@
 
 {% block conteudo %}
 	<div>
-		<h1>Cadastro de Sala na Categoria {{ cat_nome }}</h1>
+		<h3>Cadastro de Sala na Categoria {{ cat_nome }}</h3>
 		<form action="" method="post" novalidate>
 		{{ form.hidden_tag() }}
 		<p>
@@ -17,7 +17,9 @@
 			<span style="color:black">[{{ error }}]</span>
 			{% endfor %}
 		</p>
-		<p>{{ form.submit() }}</p>
+            <button class="btn waves-effect waves-light red darken-4" type="submit" name="action">Cadastrar
+                <i class="material-icons right">send</i>
+            </button>
 		</form>
 	</div>
 {% endblock %}

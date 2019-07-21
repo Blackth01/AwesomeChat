@@ -1,52 +1,81 @@
 <html>
 	<head>
 		{% if title %}
-                <title>{{ title }}</title>
-		<meta charset="utf-8">
-      		{% else %}
+        <title>{{ title }}</title>
+      	{% else %}
 		<title>O famigerado chat</title>
 		{% endif %}
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<style>
 			.msg_eu	{
 				float:right;
 				width:60%;
-				background-color:green;
 				border-radius:10px;
 				margin-bottom:10px;
 			}
 			.msg_eles {
 				float:left;
 				width:60%;
-				background-color:red;
 				border-radius:10px;
 				margin-bottom:10px;
 			}
 		</style>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" href="/static/css/materialize.min.css">
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/materialize.min.js"></script>
 	</head>
 	<body>
-		<div style="margin:auto; width:700px; height:500px; overflow:auto;background-color:red">
-			<div>
-				<a href="{{ url_for('main.index') }}">Inicio</a>
-                {% if current_user.admin %}
-                <a href="{{ url_for('categoria.cad_categoria')}}">Cadastro de Categorias</a>
-				<a href="{{ url_for('categoria.del_categoria')}}">Remover Categorias</a>
-                {% endif %}
-				{% if current_user.is_anonymous %}
-				<a href="{{ url_for('usuario.login') }}">Login</a>
-				{% else %}
-				<a href="{{ url_for('sala.del_sala')}}">Remover Salas</a>
-				<a href="{{ url_for('usuario.logout') }}">Logout</a>
-				{% endif %}
-			</div>
-                        <hr>
-                        {% with messages=get_flashed_messages() %}
-                        {% if messages %}
-				{% for message in messages %}
-				<p>{{ message }}</p>
-       				{% endfor %}
-                        {% endif %}
-                        {% endwith %}
+		<div class="container">
+			<nav>
+				<div class="nav-wrapper red darken-4">
+					<a href="#" class="brand-logo right">AwesomeChat</a>
+					<a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+					<ul class="left hide-on-med-and-down">
+						<li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+		                {% if current_user.admin %}
+		                <li><a href="{{ url_for('categoria.cad_categoria')}}">Cadastro de Categorias</a></li>
+						<li><a href="{{ url_for('categoria.del_categoria')}}">Remover Categorias</a></li>
+		                {% endif %}
+						{% if current_user.is_anonymous %}
+						<li><a href="{{ url_for('usuario.login') }}">Login</a></li>
+						{% else %}
+						<li><a href="{{ url_for('sala.del_sala')}}">Remover Salas</a></li>
+						<li><a href="{{ url_for('usuario.logout') }}">Logout</a></li>
+						{% endif %}
+					</ul>
+					 <ul class="sidenav" id="mobile-menu">
+						<li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+		                {% if current_user.admin %}
+		                <li><a href="{{ url_for('categoria.cad_categoria')}}">Cadastro de Categorias</a></li>
+						<li><a href="{{ url_for('categoria.del_categoria')}}">Remover Categorias</a></li>
+		                {% endif %}
+						{% if current_user.is_anonymous %}
+						<li><a href="{{ url_for('usuario.login') }}">Login</a></li>
+						{% else %}
+						<li><a href="{{ url_for('sala.del_sala')}}">Remover Salas</a></li>
+						<li><a href="{{ url_for('usuario.logout') }}">Logout</a></li>
+						{% endif %}
+					 </ul>
+				</div>
+			</nav>
+            <hr>
+                {% with messages=get_flashed_messages() %}
+                	{% if messages %}
+						{% for message in messages %}
+							 <div class="card-panel red lighten-3">{{ message }}</div>
+       					{% endfor %}
+                	{% endif %}
+                {% endwith %}
 			{% block conteudo %}{% endblock %}
 		</div>
+		<script>
+			  $(document).ready(function(){
+			    $('.sidenav').sidenav();
+			    $('select').formSelect();
+			    $('.collapsible').collapsible();
+			  });
+		</script>
 	</body>
 </html>

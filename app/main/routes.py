@@ -46,6 +46,7 @@ def conversa():
             dicionario['id'] = conversa.id
             dicionario['conteudo'] = conversa.conteudo
             dicionario['remetente'] = conversa.remetente.nickname
+            dicionario['data_envio'] = conversa.data_envio
             dicionario['private_id'] = conversa.private_id
             conversas[i] = dicionario
         i+=1

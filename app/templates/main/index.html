@@ -2,24 +2,34 @@
 
 {% block conteudo %}
 	<div id="main">
-		<ul>
+		<h1>Lista de categorias</h1>
+		<ul class="collapsible">
 			{% for categoria in categorias %}
 			<li>
-				{{ categoria.nome }}
-				<ul>
-					{% if categoria.salas.all() %}
-					{% for sala in categoria.salas.all() %}
-					{% if sala.senha and (not current_user.admin and current_user.id != sala.admin_id) %}
-					<li><a href="{{ url_for('sala.senha_sala', sala_id=sala.id, sala_nome=sala.nome)}}">{{ sala.nome }}</a></li>
-					{% else %}
-					<li><a href="{{ url_for('sala.sala', id_sala=sala.id, nome_sala=sala.nome)}}">{{ sala.nome }}</a></li>
-					{% endif %}
-					{% endfor %}
-					{% else %}
-					<li>Ainda não há salas cadastradas nesta categoria</li>
-					{% endif %}
-				</ul>
-				<a href="{{ url_for('sala.cad_sala', categoria=categoria.id, cat_nome=categoria.nome)}}"><button>Criar Sala</button></a>
+				<div class="collapsible-header">
+					{{ categoria.nome }}
+				</div>
+				<div class="collapsible-body">
+					<ul class="collection">
+						{% if categoria.salas.all() %}
+						{% for sala in categoria.salas.all() %}
+						{% if sala.senha and (not current_user.admin and current_user.id != sala.admin_id) %}
+						<li class="collection-item red darken-4"><a class="white-text" href="{{ url_for('sala.senha_sala', sala_id=sala.id, sala_nome=sala.nome)}}">{{ sala.nome }}</a></li>
+						{% else %}
+						<li class="collection-item red darken-4"><a class="white-text" href="{{ url_for('sala.sala', id_sala=sala.id, nome_sala=sala.nome)}}">{{ sala.nome }}</a></li>
+						{% endif %}
+						{% endfor %}
+						{% else %}
+						<li class="collection-item red darken-4"><p class="white-text">Ainda não há salas cadastradas nesta categoria</p></li>
+						{% endif %}
+					</ul>
+					<br>
+					<a href="{{ url_for('sala.cad_sala', categoria=categoria.id, cat_nome=categoria.nome)}}">
+				        <button class="btn waves-effect waves-light red darken-4" type="submit">Criar sala
+				            <i class="material-icons right">send</i>
+						</button>
+					</a>
+				</div>
 			</li>
 			{% endfor %}
 		</ul>

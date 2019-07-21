@@ -2,26 +2,28 @@
 
 {% block conteudo %}
 	<div>
-	<h1>Login</h1>
-	<p><a href="{{ url_for('usuario.registrar') }}">Ainda não tem uma conta? Registre-se!</a></p>
-	<form action="" method="post" novalidate>
-		{{ form.hidden_tag() }}
-		<p>
-			{{ form.username.label }}<br>
-			{{ form.username(size=32) }}<br>
-			{% for error in form.username.errors %}
-			<span style="color:black">[{{ error }}]</span>
-			{% endfor %}
-		</p>
-		<p>
-			{{ form.password.label }}<br>
-			{{ form.password(size=32) }}<br>
-			{% for error in form.username.errors %}
-			<span style="color:black">[{{ error }}]</span>
-			{% endfor %}
-		</p>
-		<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-		<p>{{ form.submit() }}</p>
-	</form>
+		<h1>Login</h1>
+		<p><a href="{{ url_for('usuario.registrar') }}">Ainda não tem uma conta? Registre-se!</a></p>
+		<form action="" method="post" novalidate>
+			{{ form.hidden_tag() }}
+			<p>
+				{{ form.username.label }}<br>
+				{{ form.username(size=32) }}<br>
+				{% for error in form.username.errors %}
+				<span style="color:black">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.password.label }}<br>
+				{{ form.password(size=32) }}<br>
+				{% for error in form.username.errors %}
+				<span style="color:black">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p><label>{{ form.remember_me() }} <span>{{ form.remember_me.label }}</span></label></p>
+            <button class="btn waves-effect waves-light red darken-4" type="submit" name="action">Login
+                <i class="material-icons right">send</i>
+            </button>
+		</form>
 	</div>
 {% endblock%}

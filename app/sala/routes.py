@@ -94,7 +94,7 @@ def get_banidos(sala_id):
     if (not sala):
         return jsonify({"msg":"Esta sala não existe!"})
 
-    if (not current_user.admin or current_user.id!=sala.admin_id):
+    if (not current_user.admin and current_user.id!=sala.admin_id):
         return jsonify({"msg":"Você não está autorizado!"})
     
     banidos = sala.banidos.all()
